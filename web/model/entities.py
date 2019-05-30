@@ -15,7 +15,7 @@ class Message(connector.Manager.Base):
     __tablename__ = 'messages'
     id = Column(Integer, Sequence('message_id_seq'), primary_key=True)
     content = Column(String(500))
-    sent_on = Column(DateTime(timezone=True), default = datetime.utcnow())
+    sent_on = Column(DateTime(timezone=True), default = datetime.utcnow)
     user_from_id = Column(Integer, ForeignKey('users.id'))
     user_to_id = Column(Integer, ForeignKey('users.id'))
     user_from = relationship(User, foreign_keys=[user_from_id])
