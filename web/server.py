@@ -95,10 +95,11 @@ def create_message():
     c =  json.loads(request.form['values'])
     message = entities.Message(
         content=c['content'],
-        user_from_id=c['user_from_id'],
-        user_to_id=c['user_to_id']
+        user_from_id=c['user_from']['name'],
+        user_to_id=c['user_to']['name']
     )
     session = db.getSession(engine)
+
     session.add(message)
     session.commit()
     return 'Created Message'

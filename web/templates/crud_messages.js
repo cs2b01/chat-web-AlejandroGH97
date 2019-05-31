@@ -18,6 +18,7 @@ $(function(){
             allowDeleting: true,
             allowAdding: true
         },
+
         remoteOperations: {
             sorting: true,
             paging: true
@@ -39,9 +40,11 @@ $(function(){
             dataField: "sent_on",
             allowEditing: false
         }, {
-            dataField: "user_from_id"
+            dataField: "user_from.name",
+            caption: "User from"
         }, {
-            dataField: "user_to_id"
+            dataField: "user_to.name",
+            caption: "User to"
         }, ],
     }).dxDataGrid("instance");
 });
