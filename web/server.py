@@ -95,8 +95,8 @@ def create_message():
     c =  json.loads(request.form['values'])
     message = entities.Message(
         content=c['content'],
-        user_from_id=c['user_from']['name'],
-        user_to_id=c['user_to']['name']
+        user_from_id=c['user_from']['name']['id'],
+        user_to_id=c['user_to']['name']['id']
     )
     session = db.getSession(engine)
 

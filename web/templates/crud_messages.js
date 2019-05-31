@@ -19,10 +19,7 @@ $(function(){
             allowAdding: true
         },
 
-        remoteOperations: {
-            sorting: true,
-            paging: true
-        },
+        remoteOperations: true,
         paging: {
             pageSize: 12
         },
@@ -41,10 +38,30 @@ $(function(){
             allowEditing: false
         }, {
             dataField: "user_from.name",
-            caption: "User from"
-        }, {
+            caption: "User from",
+            lookup: {
+                    dataSource: DevExpress.data.AspNet.createStore({
+                        key: "id",
+                        loadUrl: "http://127.0.0.1:8080/users",
+                        onBeforeSend: function(method, ajaxOptions) {
+                            ajaxOptions.xhrFields = { withCredentials: true };
+                        }
+                    }),
+                    displayExpr: "id"
+                }
+      }, {
             dataField: "user_to.name",
-            caption: "User to"
-        }, ],
+            caption: "User to",
+            lookup: {
+                    dataSource: DevExpress.data.AspNet.createStore({
+                        key: "id",
+                        loadUrl: "http://127.0.0.1:8080/users",
+                        onBeforeSend: function(method, ajaxOptions) {
+                            ajaxOptions.xhrFields = { withCredentials: true };
+                        }
+                    }),
+                    displayExpr: "id"
+                }
+        }, ]
     }).dxDataGrid("instance");
 });
