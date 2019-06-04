@@ -1,8 +1,9 @@
-from flask import Flask,render_template, request, session, Response, redirect
+from flask import Flask,render_template, request, session, Response, redirect, url_for
 from database import connector
 from model import entities
 import json
 from datetime import datetime
+import time
 
 db = connector.Manager()
 engine = db.createEngine()
@@ -111,7 +112,11 @@ def update_message():
     message = session.query(entities.Message).filter(entities.Message.id == id).first()
     c =  json.loads(request.form['values'])
     for key in c.keys():
-        setattr(message, key, c[key])
+        try:
+            setattr(message, key, c[key])
+        except AttributeError:
+            _key = key+'_id'
+            setattr(message,_key,c[key]['name']['id'])
     session.add(message)
     session.commit()
     return 'Message User'
@@ -124,6 +129,26 @@ def delete_message():
     session.delete(messages)
     session.commit()
     return "Deleted Message"
+
+@app.route('/authenticate', methods = ['POST'])
+def authenticate():
+    time.sleep(8)
+    message = json.loads(request.data)
+    username = message['username']
+    password = message['password']
+    session = db.getSession(engine)
+    try:
+        users = session.query(entities.User
+        ).filter(entities.User.name==username
+        ).filter(entities.User.password==password
+        ).one()
+        message = {'message':'Authorized'}
+        return Response(message,status=200,mimetype='application/json')
+    except Exception:
+        message = {'message':'Unauthorized'}
+        return Response(message,status=401,mimetype='application/json')
+
+
 
 if __name__ == '__main__':
     app.secret_key = ".."
