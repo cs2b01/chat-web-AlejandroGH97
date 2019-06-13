@@ -1,57 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <title>Chat Login</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="login.js"></script>
+    <link rel="stylesheet" href="/static/css/login.css">
 </head>
 <body>
-  <form method="POST" action="/authenticate">
-    <table>
-      <tr>
-        <td>Username</td>
-        <td><input type="text" name="username" id="username"/></td>
-      </tr>
-      <tr>
-        <td>Password</td>
-        <td><input type="password" name="password" id="password"/></td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <input type="button" value="login" onclick="getData()"/>
-        </td>
-      </tr>
-    </table>
-    <label id="action">Waiting for user</label>
-  </form>
 
-  <script>
-  function getData(){
-    $('#action').html("Authenticating...");
-    var username = $('#username').val();
-    var password = $('#password').val();
-    var message = JSON.stringify({
-      "username":username,
-      "password": password
-    });
+  <div class="login-page">
+    <div class="form">
+      <form class="login-form">
+        <input type="text" placeholder="Username" name="username" id="username"/>
+        <input type="password" placeholder="Password" name="password" id="password"/>
+        <input type="button" value="Login" onclick="getData()" background=transparent id="button"/>
+            <label id="loading" style="display: none"><img src='/static/images/giphy.gif' height='20'></label>
+            <label id="success" style="display: none"><img src='/static/images/success.png' height='20'></label>
+            <label id="fail" style="display: none"><img src='/static/images/fail.png' height='20'></label>
+      </form>
+    </div>
+  </div>
 
-    $.ajax({
-      url:'/authenticate',
-      type:'POST',
-      contentType:'application/json',
-      data:message,
-      dataType:'json',
-      success: function(response){
-        //alert(JSON.stringify(response));
-        $('#action').html(response['statusText']);
-      },
-      error: function(response){
-        //alert(JSON.stringify(response));
-        $('#action').html(response['statusText']);
-      }
-    });
-
-  }
-  </script>
 </body>
 </html>

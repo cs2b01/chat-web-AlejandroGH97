@@ -1,93 +1,103 @@
-# Uniform Interface
+# Code On Demand (COD)
+> The optional Code on Demand constraint allows clients to **request and execute code from servers**. This, in turn, allows the servers to **deploy new features to clients**. 
 
-* The Uniform Interface refers to a **standard** way to do something regardless of what the specific activity is. 
-* Software Engineering **principle of generality** applied to interface component of a component in distributed system.
-* A **consistent**, **predictable** way to query data and **exercise** actions regardless of the application domain.
+Adding this constraint allows  our web application to: 
+* Server can temporarily extend the client.
+* Transfer logic to the client.
+* Client executes logic.
 
-![](https://github.com/cs2b01/uniform-interface/blob/master/connector.png)
+## Examples:
+* JavaScript
+* Applets
 
-## What is Uniform Interface?
-> The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components. By applying the software engineering principle of generality to the component interface, the overall system architecture is simplified and the visibility of interactions is improved. Implementations are decoupled from the services they provide, which encourages independent evolvability. The trade-off, though, is that a uniform interface **degrades efficiency** , since **information is transferred in a standardized** form rather than one which is specific to an application's needs. The REST interface is designed to be efficient for large-grain hypermedia data transfer, optimizing for the common case of the Web, but resulting in an interface that is not optimal for other forms of architectural interaction. [https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm] 
-
-![](https://github.com/cs2b01/uniform-interface/blob/master/ui3.png)
+## Diagram Architecture:
+![](cod3.png)
 
 ## Advantages
-* Simplified Architecture
-* Improved visibility of interactions
-* Decoupled components
-* Improved interoperability: Reduces the cost of integration
+* Ability to add features to a deployed client.
+* Provides for improved extensibility and configurability, and better user-perceived performance and efficiency.
+* Scalability of the server is improved, since it can off-load work to the client that would otherwise have consumed its resources.
 
 ## Disadvantages
-* Degraded efficiency
+* Using code-on-demand reduces visibility
 
  
-## CRUD
+## CODE Explanation
+#### Add the script reference in HTML file
 
-> In computer programming, create, read, update, and delete (CRUD) are the four basic functions of persistent storage. Alternate words are sometimes used when defining the four basic functions of CRUD, such as retrieve instead of read, modify instead of update, or destroy instead of delete. CRUD is also sometimes used to describe user interface conventions that facilitate viewing, searching, and changing information; often using computer-based forms and reports. [https://en.wikipedia.org/wiki/Create,_read,_update_and_delete]
-
-
-| URI        | METHOD           | RQ Body  |Result  |
-| ------------- |:-------------:| -----:| -----:|
-| /users      | GET | empty | **returns** all users |
-| /users      | POST | user | new user **created** |
-| /users/<id> | GET | empty | **returns** a single user |
-| /users/<id> | PUT | user | user **updated**  |
-| /users/<id> | DELETE | empty | user **deleted** |
-
-
-### Create
-``` python
-@app.route('/users', methods = ['POST'])
-def create_user():
-    c =  json.loads(request.form['values'])
-    user = entities.User(
-        username=c['username'],
-        name=c['name'],
-        fullname=c['fullname'],
-        password=c['password']
-    )
-    session = db.getSession(engine)
-    session.add(user)
-    session.commit()
-    return 'Created User'
+``` html
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="login.js"></script>
+</head>
 ```
 
-### Read
-``` python
-@app.route('/users', methods = ['GET'])
-def get_users():
-    session = db.getSession(engine)
-    dbResponse = session.query(entities.User)
-    data = dbResponse[:]
-    return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
-```
-### Update
-``` python
-@app.route('/users', methods = ['PUT'])
-def update_user():
-    session = db.getSession(engine)
-    id = request.form['key']
-    user = session.query(entities.User).filter(entities.User.id == id).first()
-    c =  json.loads(request.form['values'])
-    for key in c.keys():
-        setattr(user, key, c[key])
-    session.add(user)
-    session.commit()
-    return 'Updated User'
+#### Link the button event with a JS function 
+``` html
+<input type="button" value="login" onclick="getData()"/>
 ```
 
-### Delete
-``` python
-@app.route('/messages', methods = ['DELETE'])
-def delete_message():
-    id = request.form['key']
-    session = db.getSession(engine)
-    messages = session.query(entities.User).filter(entities.User.id == id)
-    for message in messages:
-        session.delete(message)
-    session.commit()
-    return "Deleted Message"
+#### Create getData function
+``` javascript
+function getData(){
+        $('#action').html("Authenticating...");
+        var username = $('#username').val();
+        var password = $('#password').val();
+        var message = JSON.stringify({
+                "username": username,
+                "password": password
+            });
+
+        $.ajax({
+            url:'/authenticate',
+            type:'POST',
+            contentType: 'application/json',
+            data : message,
+            dataType:'json',
+            success: function(response){
+                //alert(JSON.stringify(response));
+                $('#action').html(response['statusText']);
+            },
+            error: function(response){
+                //alert(JSON.stringify(response));
+                $('#action').html(response['statusText']);
+            }
+        });
+    }
 ```
+
+
+#### Modify authenticate backend method
+``` python
+def authenticate():
+    #1. Collect data from request message
+    message = json.loads(request.data)
+    username = message['username']
+    password = message['password']
+    #2. Look in database if a user exists
+    db_session = db.getSession(engine)
+    try:
+        user = db_session.query(entities.User
+            ).filter(entities.User.username == username
+            ).filter(entities.User.password == password
+            ).one()
+        #3a. Return an authorized message to client
+        message = {'message': 'Authorized'}
+        return Response(message, status=200, mimetype='application/json')
+    except Exception:
+        #3b. Return an unauthorized message to client
+        message = {'message': 'Unauthorized'}
+        return Response(message, status=401, mimetype='application/json')
+
+```
+
+## TODO
+* Add CSS Style to Login
+* Modify ```getData() ``` function to instead a text show a wheel image while loading.
+* Create chat.html and chat.js to allow users send a receive messages.
+
 ## Referencias.
 1.  [https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm]
 2.  [https://en.wikipedia.org/wiki/Create,_read,_update_and_delete]
