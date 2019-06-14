@@ -28,7 +28,10 @@
 
 		        </tbody>
 		    </table>
-		</div>
+
+		              </div>
+                  <input class="btn btn-primary btn-sm" type="button" value="Logout" onclick="window.location='/logout'" background=transparent id="logout"/>
+
                  </div>
 
 
@@ -50,7 +53,7 @@
                     <div class="input-group">
                         <input id="btn-input" name="btn-input" type="text" class="form-control input-sm chat_input" placeholder="Write your message here..." />
                         <span class="input-group-btn">
-                          <input type="button" value="Send" onclick="send_message();clearInput();" background=transparent id="button"/>
+                          <input class="btn btn-primary btn-sm" type="button" value="Send" onclick="send_message();clearInput();" background=transparent id="button"/>
                           <script type="text/javascript">
                           function clearInput(){
                             document.getElementById("btn-input").value="";

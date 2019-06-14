@@ -35,9 +35,9 @@
 a{cursor:pointer;}
 
 body{
-    height:800px;
-    position: fixed;
+    position: top;
     bottom: 0;
+    background: #85c0f7;
 }
 .col-md-2, .col-md-10{
     padding:0;
@@ -61,8 +61,8 @@ body{
   background: #e5e5e5;
   margin: 0;
   padding: 0 10px 10px;
-  max-height:700px;
-  height: 700px;  
+  max-height:80vh;
+  height: 80vh;
   overflow-x:hidden;
 }
 .top-bar {

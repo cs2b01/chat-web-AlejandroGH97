@@ -198,6 +198,10 @@ def send_msg():
     db_session.commit()
     return 'Created Message'
 
+@app.route('/logout',methods=['GET'])
+def logout():
+    session.clear()
+    return redirect('/static/login.html')
 
 
 if __name__ == '__main__':

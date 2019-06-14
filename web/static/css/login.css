@@ -18,7 +18,7 @@
 .form input[type="button"]{
   font-family: "Roboto", sans-serif;
   outline: 0;
-  background-color: #4CAF50;
+  background-color: #4a8bc8;
   width: 100%;
   border: 0;
   margin: 0 0 15px;
@@ -102,11 +102,11 @@
   color: #EF3B3A;
 }
 body {
-  background: #76b852; /* fallback for old browsers */
-  background: -webkit-linear-gradient(right, #76b852, #8DC26F);
-  background: -moz-linear-gradient(right, #76b852, #8DC26F);
-  background: -o-linear-gradient(right, #76b852, #8DC26F);
-  background: linear-gradient(to left, #76b852, #8DC26F);
+  background: #85c0f7; /* fallback for old browsers */
+  background: -webkit-linear-gradient(right, #85c0f7, #85c0f7);
+  background: -moz-linear-gradient(right, #85c0f7, #85c0f7);
+  background: -o-linear-gradient(right, #85c0f7, #85c0f7);
+  background: linear-gradient(to left, #85c0f7, #85c0f7);
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
