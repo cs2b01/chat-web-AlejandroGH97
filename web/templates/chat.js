@@ -19,7 +19,13 @@ function me(){
                 alert(JSON.stringify(response));
             }
         });
+        refresh();
     }
+
+function updateScroll(){
+  var element = document.getElementById("chat_content");
+  element.scrollTop = element.scrollHeight;
+}
 
   function contactos(){
     $.ajax({
@@ -88,11 +94,15 @@ function loadMessages(from, to){
                   i = i+1;
               });
               $('#chat_content').html(mensajes)
+              updateScroll();
+
             },
             error: function(response){
                 alert(JSON.stringify(response));
             }
+
         });
+
 }
 
 function send_message(){
@@ -118,3 +128,7 @@ function send_message(){
         });
         loadMessages(current_user_id,current_clicked_id);
     }
+
+  function refresh(){
+     var ref = setInterval(function(){loadMessages(current_user_id,current_clicked_id);}, 6000);
+  }
