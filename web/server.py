@@ -27,7 +27,8 @@ def chat(id,id2):
     data = []
     for message in messages:
         data.append(message)
-    return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
+    message = {'response':data}
+    return Response(json.dumps(message, cls=connector.AlchemyEncoder), mimetype='application/json')
 
     #return render_template('chat.html', users=users, messages=messages, id=int(id),id2=int(id2),to=to)
 
@@ -39,19 +40,38 @@ def get_users():
     data = []
     for user in dbResponse:
         data.append(user)
-    return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
-
+    message = {'data':data}
+    return Response(json.dumps(message, cls=connector.AlchemyEncoder), mimetype='application/json')
 
 @app.route('/users/<id>', methods = ['GET'])
-def get_user(id):
-    db_session = db.getSession(engine)
-    users = db_session.query(entities.User).filter(entities.User.id == id)
-    for user in users:
-        js = json.dumps(user, cls=connector.AlchemyEncoder)
-        return  Response(js, status=200, mimetype='application/json')
+def get_users_filtered(id):
+    session = db.getSession(engine)
+    dbResponse = session.query(entities.User).filter(entities.User.id != id)
+    data = []
+    for user in dbResponse:
+        data.append(user)
+    message = {'data':data}
+    return Response(json.dumps(message, cls=connector.AlchemyEncoder), mimetype='application/json')
 
-    message = { 'status': 404, 'message': 'Not Found'}
-    return Response(message, status=404, mimetype='application/json')
+#@app.route('/users', methods = ['GET'])
+#def get_users():
+#    session = db.getSession(engine)
+#    dbResponse = session.query(entities.User)
+#    data = []
+#    for user in dbResponse:
+#        data.append(user)
+#    return Response(json.dumps(data, cls=connector.AlchemyEncoder), mimetype='application/json')
+
+#@app.route('/users/<id>', methods = ['GET'])
+#def get_user(id):
+#    db_session = db.getSession(engine)
+#    users = db_session.query(entities.User).filter(entities.User.id == id)
+#    for user in users:
+#        js = json.dumps(user, cls=connector.AlchemyEncoder)
+#        return  Response(js, status=200, mimetype='application/json')
+#
+#    message = { 'status': 404, 'message': 'Not Found'}
+#    return Response(message, status=404, mimetype='application/json')
 
 @app.route('/create_test_users', methods = ['GET'])
 def create_test_users():
@@ -113,11 +133,11 @@ def get_messages():
 
 @app.route('/messages', methods = ['POST'])
 def create_message():
-    c =  json.loads(request.form['values'])
+    c = json.loads(request.data)
     message = entities.Message(
         content=c['content'],
-        user_from_id=c['user_from']['name']['id'],
-        user_to_id=c['user_to']['name']['id']
+        user_from_id=c['user_from_id'],
+        user_to_id=c['user_to_id']
     )
     session = db.getSession(engine)
 
@@ -153,7 +173,6 @@ def delete_message():
 
 @app.route('/authenticate', methods = ["POST"])
 def authenticate():
-    time.sleep(2)
     message = json.loads(request.data)
     username = message['username']
     password = message['password']
@@ -165,7 +184,8 @@ def authenticate():
             ).filter(entities.User.password == password
             ).one()
         session['logged_user'] = user.id
-        return Response(json.dumps(user,cls=connector.AlchemyEncoder), status=200, mimetype='application/json')
+        message = {'message': 'Authorized', 'user_id': user.id, 'username': user.username}
+        return Response(json.dumps(message,cls=connector.AlchemyEncoder), status=200, mimetype='application/json')
     except Exception:
         message = {'message': 'Unauthorized'}
         return Response(message, status=401, mimetype='application/json')
@@ -206,4 +226,4 @@ def logout():
 
 if __name__ == '__main__':
     app.secret_key = ".."
-    app.run(port=8080, threaded=True, host=('127.0.0.1'))
+    app.run(debug=True, port=8080, threaded=True, host=('0.0.0.0'))
